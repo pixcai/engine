@@ -46,5 +46,5 @@ function render() {
 
 device.loadJSON('monkey.json', function (meshesLoaded) {
     meshes = meshesLoaded
-    render()
+    requestAnimationFrame(render)
 })

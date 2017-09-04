@@ -1,4 +1,17 @@
-ENGINE.Point = class {
+ENGINE.Color4 = class {
+    constructor(initialR, initialG, initialB, initialA) {
+        this.r = initialR
+        this.g = initialG
+        this.b = initialB
+        this.a = initialA
+    }
+
+    toString() {
+        return `{r: ${this.r} g: ${this.g} b: ${this.b} a: ${this.a}}`
+    }
+}
+
+ENGINE.Vector2 = class {
     constructor(initialX, initialY) {
         this.x = initialX
         this.y = initialY
@@ -25,26 +38,10 @@ ENGINE.Point = class {
     }
 }
 
-ENGINE.Color4 = class {
-    constructor(initialR, initialG, initialB, initialA) {
-        this.r = initialR
-        this.g = initialG
-        this.b = initialB
-        this.a = initialA
-    }
-
-    toString() {
-        return `{r: ${this.r} g: ${this.g} b: ${this.b} a: ${this.a}}`
-    }
-}
-
-ENGINE.Vector2 = class extends ENGINE.Point {
-
-}
-
-ENGINE.Vector3 = class extends ENGINE.Point {
+ENGINE.Vector3 = class {
     constructor(initialX, initialY, initialZ) {
-        super(initialX, initialY)
+        this.x = initialX
+        this.y = initialY
         this.z = initialZ
     }
 
