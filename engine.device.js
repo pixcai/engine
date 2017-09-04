@@ -91,4 +91,63 @@ ENGINE.Device = class {
             }
         }
     }
+
+    createMeshesFromJSON(jsonObject) {
+        const meshes = []
+
+        for (let meshIndex = 0; meshIndex < jsonObject.meshes.length; meshIndex++) {
+            const verticesArray = jsonObject.meshes[meshIndex].vertices
+            const indicesArray = jsonObject.meshes[meshIndex].indices
+            const uvCount = jsonObject.meshes[meshIndex].uvCount
+            let verticesStep = 1
+
+            switch (uvCount) {
+                case 0:
+                    verticesStep = 6
+                    break
+                case 1:
+                    verticesStep = 8
+                    break
+                case 2:
+                    verticesStep = 10
+                    break
+            }
+
+            const verticesCount = verticesArray.length / verticesStep
+            const facesCount = indicesArray.length / 3
+            const mesh = new ENGINE.Mesh(jsonObject.meshes[meshIndex].name, verticesCount, facesCount)
+
+            for (let index = 0; index < verticesCount; index++) {
+                const x = verticesArray[index * verticesStep]
+                const y = verticesArray[index * verticesStep + 1]
+                const z = verticesArray[index * verticesStep + 2]
+                mesh.vertices[index] = new ENGINE.Vector3(x, y, z)
+            }
+            for (let index = 0; index < facesCount; index++) {
+                const A = indicesArray[index * 3]
+                const B = indicesArray[index * 3 + 1]
+                const C = indicesArray[index * 3 + 2]
+                mesh.faces[index] = { A: A, B: B, C: C }
+                const position = jsonObject.meshes[meshIndex].position
+                mesh.position = new ENGINE.Vector3(position[0], position[1], position[2])
+                meshes.push(mesh)
+            }
+        }
+
+        return meshes
+    }
+
+    loadJSON(filename, callback) {
+        let jsonObject = {}
+        const xhr = new XMLHttpRequest()
+
+        xhr.open('GET', filename, true)
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                jsonObject = JSON.parse(xhr.responseText)
+                callback(this.createMeshesFromJSON(jsonObject))
+            }
+        }
+        xhr.send(null)
+    }
 }
