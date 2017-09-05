@@ -1,3 +1,4 @@
+var cc = 0;
 ENGINE.Device = class {
     constructor(canvas) {
         this.workingCanvas = canvas
@@ -49,8 +50,8 @@ ENGINE.Device = class {
         const gradient2 = pc.y != pd.y ? (data.currentY - pc.y) / (pd.y - pc.y) : 1
         const sx = this.interpolate(pa.x, pb.x, gradient1) >> 0
         const ex = this.interpolate(pc.x, pd.x, gradient2) >> 0
-        const z1 = this.interpolate(pa.z, pb.z, gradient1) >> 0
-        const z2 = this.interpolate(pc.z, pd.z, gradient2) >> 0
+        const z1 = this.interpolate(pa.z, pb.z, gradient1)
+        const z2 = this.interpolate(pc.z, pd.z, gradient2)
 
         for (let x = sx; x < ex; x++) {
             const gradient = (x - sx) / (ex - sx)
@@ -64,13 +65,13 @@ ENGINE.Device = class {
     putPixel(x, y, z, color) {
         this.backBufferData = this.backBuffer.data
 
-        const index = ((x >> 0) + (y >> 0) * this.workingWidth)
+        const index = (x >> 0) + (y >> 0) * this.workingWidth
         const index4 = index * 4
 
         if (this.depthBuffer[index] < z) return
 
         this.depthBuffer[index] = z
-        this.backBufferData[index4 + 0] = color.r * 255
+        this.backBufferData[index4] = color.r * 255
         this.backBufferData[index4 + 1] = color.g * 255
         this.backBufferData[index4 + 2] = color.b * 255
         this.backBufferData[index4 + 3] = color.a * 255
@@ -81,8 +82,8 @@ ENGINE.Device = class {
         const point3DWorld = ENGINE.Vector3.TransformCoordinates(vertex.Coordinates, world)
         const normal3DWorld = ENGINE.Vector3.TransformCoordinates(vertex.Normal, world)
 
-        const x = point2d.x * this.workingWidth + this.workingWidth / 2.0 >> 0
-        const y = -point2d.y * this.workingHeight + this.workingHeight / 2.0 >> 0
+        const x = point2d.x * this.workingWidth + this.workingWidth / 2.0
+        const y = -point2d.y * this.workingHeight + this.workingHeight / 2.0
 
         return {
             Coordinates: new ENGINE.Vector3(x, y, point2d.z),
@@ -94,32 +95,6 @@ ENGINE.Device = class {
     drawPoint(point, color) {
         if (point.x >= 0 && point.y >= 0 && point.x < this.workingWidth && point.y < this.workingHeight) {
             this.putPixel(point.x, point.y, point.z, color)
-        }
-    }
-
-    drawLine(point0, point1) {
-        let x0 = point0.x >> 0
-        let y0 = point0.y >> 0
-        const x1 = point1.x >> 0
-        const y1 = point1.y >> 0
-        const dx = Math.abs(x1 - x0)
-        const dy = Math.abs(y1 - y0)
-        const sx = (x0 < x1) ? 1 : -1
-        const sy = (y0 < y1) ? 1 : -1
-        let err = dx - dy
-
-        while (true) {
-            this.drawPoint(new ENGINE.Vector2(x0, y0))
-            if ((x0 == x1) && (y0 == y1)) break
-            const e2 = 2 * err
-            if (e2 > -dy) {
-                err -= dy
-                x0 += sx
-            }
-            if (e2 < dx) {
-                err += dx
-                y0 += sy
-            }
         }
     }
 
@@ -199,7 +174,8 @@ ENGINE.Device = class {
                 const pixelB = this.project(vertexB, transformMatrix, worldMatrix)
                 const pixelC = this.project(vertexC, transformMatrix, worldMatrix)
 
-                const color = 0.25 + ((indexFaces % mesh.faces.length) / mesh.faces.length) * 0.75
+                const color = 1 // 0.25 + ((indexFaces % mesh.faces.length) / mesh.faces.length) * 0.75
+
                 this.drawTriangle(pixelA, pixelB, pixelC, new ENGINE.Color4(color, color, color, 1))
             }
         }

@@ -11,33 +11,6 @@ ENGINE.Color4 = class {
     }
 }
 
-ENGINE.Vector2 = class {
-    constructor(initialX, initialY) {
-        this.x = initialX
-        this.y = initialY
-    }
-
-    toString() {
-        return `{x: ${this.x} y: ${this.y}}`
-    }
-
-    length() {
-        return Math.sqrt(this.x * this.x + this.y * this.y)
-    }
-
-    scale(scale) {
-        return new ENGINE.Vector2(this.x * scale, this.y * scale)
-    }
-
-    add(otherVector) {
-        return new ENGINE.Vector2(this.x + otherVector.x, this.y + otherVector.y)
-    }
-
-    subtract(otherVector) {
-        return new ENGINE.Vector2(this.x - otherVector.x, this.y - otherVector.y)
-    }
-}
-
 ENGINE.Vector3 = class {
     constructor(initialX, initialY, initialZ) {
         this.x = initialX
@@ -161,21 +134,6 @@ ENGINE.Matrix = class {
         return ENGINE.Matrix.FromValues(xAxis.x, yAxis.x, zAxis.x, 0, xAxis.y, yAxis.y, zAxis.y, 0, xAxis.z, yAxis.x, zAxis.z, 0, ex, ey, ez, 1)
     }
 
-    static PerspectiveLH(width, height, znear, zfar) {
-        const matrix = ENGINE.Matrix.Zero()
-
-        matrix.m[0] = (2.0 * znear) / width
-        matrix.m[1] = matrix.m[2] = matrix.m[3] = 0.0
-        matrix.m[5] = (2.0 * znear) / height
-        matrix.m[4] = matrix.m[6] = matrix.m[7] = 0.0
-        matrix.m[8] = matrix.m[9] = 0.0
-        matrix.m[11] = 1.0
-        matrix.m[12] = matrix.m[13] = matrix.m[15] = 0.0
-        matrix.m[14] = (znear * zfar) / (znear - zfar)
-
-        return matrix
-    }
-
     static PerspectiveFovLH(fov, aspect, znear, zfar) {
         const matrix = ENGINE.Matrix.Zero()
         const tan = 1.0 / (Math.tan(fov * 0.5))
@@ -185,6 +143,7 @@ ENGINE.Matrix = class {
         matrix.m[5] = tan
         matrix.m[4] = matrix.m[6] = matrix.m[7] = 0.0
         matrix.m[8] = matrix.m[9] = 0.0
+        matrix.m[10] = -zfar / (znear - zfar)
         matrix.m[11] = 1.0
         matrix.m[12] = matrix.m[13] = matrix.m[15] = 0.0
         matrix.m[14] = (znear * zfar) / (znear - zfar)
